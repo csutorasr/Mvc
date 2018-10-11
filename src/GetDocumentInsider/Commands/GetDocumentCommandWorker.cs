@@ -56,7 +56,23 @@ namespace Microsoft.Extensions.ApiDescription.Tool.Commands
 
             try
             {
-                var serviceType = Type.GetType(serviceName, throwOnError: true);
+                Type serviceType = null;
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    serviceType = assembly.GetType(serviceName, throwOnError: false);
+                    if (serviceType != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (serviceType == null)
+                {
+                    // As part of the aspnet/Mvc#8425 fix, make this an error unless the file already exists.
+                    Reporter.WriteWarning(Resources.FormatServiceNotFound(serviceName));
+                    return true;
+                }
+
                 var method = serviceType.GetMethod(methodName, new[] { typeof(TextWriter), typeof(string) });
                 var service = services.GetRequiredService(serviceType);
 

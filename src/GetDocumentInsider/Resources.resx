@@ -162,4 +162,7 @@
   <data name="MissingEntryPoint" xml:space="preserve">
     <value>Assembly '{0}' does not contain an entry point.</value>
   </data>
+  <data name="ServiceNotFound" xml:space="preserve">
+    <value>Unable to find service type '{0}' in loaded assemblies.</value>
+  </data>
 </root>

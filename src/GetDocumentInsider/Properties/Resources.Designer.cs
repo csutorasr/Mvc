@@ -220,6 +220,20 @@ namespace Microsoft.Extensions.ApiDescription.Tool
         internal static string FormatMissingEntryPoint(object p0)
             => string.Format(CultureInfo.CurrentCulture, GetString("MissingEntryPoint"), p0);
 
+        /// <summary>
+        /// Unable to find service type '{0}' in loaded assemblies.
+        /// </summary>
+        internal static string ServiceNotFound
+        {
+            get => GetString("ServiceNotFound");
+        }
+
+        /// <summary>
+        /// Unable to find service type '{0}' in loaded assemblies.
+        /// </summary>
+        internal static string FormatServiceNotFound(object p0)
+            => string.Format(CultureInfo.CurrentCulture, GetString("ServiceNotFound"), p0);
+
         private static string GetString(string name, params string[] formatterNames)
         {
             var value = _resourceManager.GetString(name);

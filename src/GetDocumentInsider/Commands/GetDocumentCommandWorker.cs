@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,8 +52,18 @@ namespace Microsoft.Extensions.ApiDescription.Tool.Commands
                 context.Service;
 
             Reporter.WriteInformation(Resources.FormatUsingDocument(documentName));
-            Reporter.WriteInformation(Resources.FormatUsingMethod(methodName));
             Reporter.WriteInformation(Resources.FormatUsingService(serviceName));
+
+            string alternateMethodName = null;
+            if (methodName.EndsWith("Async", StringComparison.Ordinal))
+            {
+                Reporter.WriteInformation(Resources.FormatUsingMethod(methodName));
+            }
+            else
+            {
+                alternateMethodName = methodName + "Async";
+                Reporter.WriteInformation(Resources.FormatUsingMethods(methodName, alternateMethodName));
+            }
 
             try
             {
@@ -69,23 +80,62 @@ namespace Microsoft.Extensions.ApiDescription.Tool.Commands
                 if (serviceType == null)
                 {
                     // As part of the aspnet/Mvc#8425 fix, make this an error unless the file already exists.
-                    Reporter.WriteWarning(Resources.FormatServiceNotFound(serviceName));
+                    Reporter.WriteWarning(Resources.FormatServiceTypeNotFound(serviceName));
                     return true;
                 }
 
                 var method = serviceType.GetMethod(methodName, new[] { typeof(TextWriter), typeof(string) });
+                if (method == null && alternateMethodName != null)
+                {
+                    method = serviceType.GetMethod(alternateMethodName, new[] { typeof(TextWriter), typeof(string) });
+                }
+
+                if (method == null)
+                {
+                    // As part of the aspnet/Mvc#8425 fix, make this an error unless the file already exists.
+                    if (alternateMethodName == null)
+                    {
+                        Reporter.WriteWarning(Resources.FormatMethodNotFound(methodName, serviceName));
+                    }
+                    else
+                    {
+                        Reporter.WriteWarning(
+                            Resources.FormatMethodsNotFound(methodName, alternateMethodName, serviceName));
+                    }
+
+                    return true;
+                }
+
                 var service = services.GetRequiredService(serviceType);
+                if (service == null)
+                {
+                    // As part of the aspnet/Mvc#8425 fix, make this an error unless the file already exists.
+                    Reporter.WriteWarning(Resources.FormatServiceNotFound(serviceName));
+                    return true;
+                }
 
                 var success = true;
                 using (var writer = File.CreateText(context.Output))
                 {
-                    if (method.ReturnType == typeof(bool))
+                    var result = method.Invoke(service, new object[] { writer, documentName });
+                    switch (result)
                     {
-                        success = (bool)method.Invoke(service, new object[] { writer, documentName });
-                    }
-                    else
-                    {
-                        method.Invoke(service, new object[] { writer, documentName });
+                        case null:
+                            break;
+
+                        case bool boolResult:
+                            success = boolResult;
+                            break;
+
+                        case Task<bool> taskBoolResult:
+                            taskBoolResult.Wait(TimeSpan.FromSeconds(30));
+                            success = taskBoolResult.Result;
+                            break;
+
+                        case Task taskResult:
+                            taskResult.Wait(TimeSpan.FromSeconds(30));
+                            break;
+
                     }
                 }
 

@@ -223,16 +223,72 @@ namespace Microsoft.Extensions.ApiDescription.Tool
         /// <summary>
         /// Unable to find service type '{0}' in loaded assemblies.
         /// </summary>
+        internal static string ServiceTypeNotFound
+        {
+            get => GetString("ServiceTypeNotFound");
+        }
+
+        /// <summary>
+        /// Unable to find service type '{0}' in loaded assemblies.
+        /// </summary>
+        internal static string FormatServiceTypeNotFound(object p0)
+            => string.Format(CultureInfo.CurrentCulture, GetString("ServiceTypeNotFound"), p0);
+
+        /// <summary>
+        /// Unable to find method named '{0}' in '{1}' implementation.
+        /// </summary>
+        internal static string MethodNotFound
+        {
+            get => GetString("MethodNotFound");
+        }
+
+        /// <summary>
+        /// Unable to find method named '{0}' in '{1}' implementation.
+        /// </summary>
+        internal static string FormatMethodNotFound(object p0, object p1)
+            => string.Format(CultureInfo.CurrentCulture, GetString("MethodNotFound"), p0, p1);
+
+        /// <summary>
+        /// Unable to find method named '{0}' or '{1}' in '{2}' implementation.
+        /// </summary>
+        internal static string MethodsNotFound
+        {
+            get => GetString("MethodsNotFound");
+        }
+
+        /// <summary>
+        /// Unable to find method named '{0}' or '{1}' in '{2}' implementation.
+        /// </summary>
+        internal static string FormatMethodsNotFound(object p0, object p1, object p2)
+            => string.Format(CultureInfo.CurrentCulture, GetString("MethodsNotFound"), p0, p1, p2);
+
+        /// <summary>
+        /// Unable to find service of type '{0}' in dependency injection container.
+        /// </summary>
         internal static string ServiceNotFound
         {
             get => GetString("ServiceNotFound");
         }
 
         /// <summary>
-        /// Unable to find service type '{0}' in loaded assemblies.
+        /// Unable to find service of type '{0}' in dependency injection container.
         /// </summary>
         internal static string FormatServiceNotFound(object p0)
             => string.Format(CultureInfo.CurrentCulture, GetString("ServiceNotFound"), p0);
+
+        /// <summary>
+        /// Using method '{0}' or '{1}'.
+        /// </summary>
+        internal static string UsingMethods
+        {
+            get => GetString("UsingMethods");
+        }
+
+        /// <summary>
+        /// Using method '{0}' or '{1}'.
+        /// </summary>
+        internal static string FormatUsingMethods(object p0, object p1)
+            => string.Format(CultureInfo.CurrentCulture, GetString("UsingMethods"), p0, p1);
 
         private static string GetString(string name, params string[] formatterNames)
         {

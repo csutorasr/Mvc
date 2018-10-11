@@ -162,7 +162,19 @@
   <data name="MissingEntryPoint" xml:space="preserve">
     <value>Assembly '{0}' does not contain an entry point.</value>
   </data>
-  <data name="ServiceNotFound" xml:space="preserve">
+  <data name="ServiceTypeNotFound" xml:space="preserve">
     <value>Unable to find service type '{0}' in loaded assemblies.</value>
+  </data>
+  <data name="MethodNotFound" xml:space="preserve">
+    <value>Unable to find method named '{0}' in '{1}' implementation.</value>
+  </data>
+  <data name="MethodsNotFound" xml:space="preserve">
+    <value>Unable to find method named '{0}' or '{1}' in '{2}' implementation.</value>
+  </data>
+  <data name="ServiceNotFound" xml:space="preserve">
+    <value>Unable to find service of type '{0}' in dependency injection container.</value>
+  </data>
+  <data name="UsingMethods" xml:space="preserve">
+    <value>Using method '{0}' or '{1}'.</value>
   </data>
 </root>

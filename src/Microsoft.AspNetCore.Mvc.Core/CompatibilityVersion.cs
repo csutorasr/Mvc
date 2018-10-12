@@ -66,7 +66,15 @@ namespace Microsoft.AspNetCore.Mvc
         /// <remarks>
         /// ASP.NET Core MVC 2.2 introduces compatibility switches for the following:
         /// <list type="bullet">
+        ///     <item><description><c>ApiBehaviouOptions.SuppressMapClientErrors</c></description></item>
+        ///     <item><description><c>ApiBehaviorOptions.SuppressUseValidationProblemDetailsForInvalidModelStateResponses</c></description></item>
         ///     <item><description><c>MvcDataAnnotationsLocalizationOptions.AllowDataAnnotationsLocalizationForEnumDisplayAttributes</c></description></item>
+        ///     <item><description><c>MvcOptions.EnableEndpointRouting</c></description></item>
+        ///     <item><description><c>MvcOptions.MaxValidationDepth</c></description></item>
+        ///     <item><description><c>RazorPagesOptions.AllowDefaultHandlingForOptionsRequests</c></description></item>
+        ///     <item><description><c>RazorViewEngineOptions.AllowRecompilingViewsOnFileChange</c></description></item>
+        ///     <item><description><c>MvcViewOptions.AllowRenderingMaxLengthAttribute</c></description></item>
+        ///     <item><description><c>MvcXmlOptions.AllowRfc7807CompliantProblemDetailsFormat</c></description></item>
         /// </list>
         /// </remarks>
         Version_2_2,

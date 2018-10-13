@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -548,6 +549,47 @@ namespace Microsoft.AspNetCore.Mvc
             Assert.Equal(expectedContentType, actionContext.HttpContext.Response.ContentType);
         }
 
+        [Fact]
+        public async Task ExecuteResultAsync_ExecutesViewComponent_ViewDataCanBeChanged()
+        {
+            // Arrange
+            var methodInfo = typeof(ViewDataChangerViewComponent).GetMethod(nameof(ViewDataChangerViewComponent.Invoke));
+            var descriptor = new ViewComponentDescriptor()
+            {
+                FullName = "Full.Name.ViewDataChanger",
+                ShortName = "ViewDataChanger",
+                TypeInfo = typeof(ViewDataChangerViewComponent).GetTypeInfo(),
+                MethodInfo = methodInfo,
+                Parameters = methodInfo.GetParameters(),
+            };
+
+            var actionContext = CreateActionContext(descriptor);
+            var viewData = new ViewDataDictionary(new EmptyModelMetadataProvider());
+            var viewContext = new ViewContext(
+                actionContext,
+                NullView.Instance,
+                viewData,
+                _tempDataDictionary,
+                TextWriter.Null,
+                new HtmlHelperOptions());
+
+            var viewComponentResult = new ViewComponentResult()
+            {
+                Arguments = new { key = "test", value = "World!" },
+                ViewComponentName = "Full.Name.ViewDataChanger",
+                ViewData = viewContext.ViewData,
+                TempData = viewContext.TempData,
+            };
+
+            // Act
+            await viewComponentResult.ExecuteResultAsync(actionContext);
+
+            // Assert
+            var body = ReadBody(actionContext.HttpContext.Response);
+            Assert.Equal("Hello, World!", body);
+            Assert.Equal("World!", viewData["test"]);
+        }
+
         private IServiceCollection CreateServices(
             object diagnosticListener,
             HttpContext context,
@@ -644,6 +686,15 @@ namespace Microsoft.AspNetCore.Mvc
             public Task<HtmlString> InvokeAsync(string name)
             {
                 return Task.FromResult(new HtmlString("Hello-Async, " + name));
+            }
+        }
+
+        private class ViewDataChangerViewComponent : ViewComponent
+        {
+            public HtmlString Invoke(string key, object value)
+            {
+                ViewData[key] = value;
+                return new HtmlString("Hello, " + ViewData[key]);
             }
         }
     }
